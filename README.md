@@ -7,7 +7,10 @@ To work properly requires .env file with following variables:
 Also requires two folders, input and output.
 
 # Executing the script
-execute following command in a folder with the script itself 
+Execute following command in a folder with the script itself 
+
 _node index "file name.ext"_ 
+
 where .ext is file extention while target file is located in input folder. 
+
 Sorted output files  will be saved into output folder
