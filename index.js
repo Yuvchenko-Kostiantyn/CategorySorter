@@ -1,6 +1,6 @@
 const xlsx = require('xlsx');
 require('dotenv').config()
-const key = process.env.PARAMETER_NAME
+const key = process.env.CATEGORY
 function Category(catName){
     this.category = catName;
     this.items = [] 
@@ -16,7 +16,8 @@ data.forEach(el => {
 })
 let categorySet = cats.map(el => new Category(el))
 data.forEach(el => {
-    let category = categorySet.find(cat => cat.category === el[key] )
+    let category = categorySet.find(cat => cat.category === el[key])
+    delete el[key]
     category.items.push(el)
 })
 for(let cat of categorySet){
