@@ -2,17 +2,23 @@ const xlsx = require('xlsx');
 const fs = require('fs');
 const log = JSON.parse(fs.readFileSync('stats.json'));
 require('dotenv').config();
-const key = process.env.CATEGORY;
+
+const functions = require('./functions')
+
+const key = process.env.CATEGORY ? process.env.CATEGORY : '';
+const GROUP = process.env.GROUP ? process.env.GROUP : '';
 
 function Category(categoryName){
-	this.category = categoryName;
+	this.name = categoryName;
 	this.items = [];
 }
 
 let workSheet = xlsx.readFile(`input/${process.argv[2]}`)
 	.Sheets['Worksheet'];
 
-let data = xlsx.utils.sheet_to_json(workSheet);
+// Parse all the data to JSON and remove columns that don't have a name
+let data = xlsx.utils.sheet_to_json(workSheet)
+	.map(item => functions.clearObject(item, GROUP));
 
 // Makes new array of all categories and removes duplicate through set 
 // and converts back to an array via spreas operator
@@ -25,7 +31,7 @@ fs.writeFile('stats.json', JSON.stringify(log), () => {});
 // Creates an array of categories and populates inner arrays with items of said category
 let categorySet = categories.map(el => new Category(el));
 data.forEach(record => {
-	let category = categorySet.find(category => category.category === record[key]);
+	let category = categorySet.find(category => category.name === record[key]);
 	delete record[key];
 	category.items.push(record);
 });
@@ -35,6 +41,6 @@ for(let category of categorySet) {
 	let newWorkBook = xlsx.utils.book_new();
 	let newWorkSheet = xlsx.utils.json_to_sheet(category.items);
 	xlsx.utils.book_append_sheet(newWorkBook, newWorkSheet, 'Worksheet');
-	xlsx.writeFile(newWorkBook, `output/${category.category}.xls`);
+	xlsx.writeFile(newWorkBook, `output/${category.name}.xls`);
 }
 console.log('Done');
