@@ -1,6 +1,6 @@
-function Category(categoryName){
-	this.name = categoryName;
-	this.items = [];
+export default class Category {
+	constructor(categoryName) {
+		this.name = categoryName;
+		this.items = [];
+	}
 }
-
-module.exports = { Category }

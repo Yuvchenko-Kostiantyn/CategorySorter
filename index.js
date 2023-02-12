@@ -1,3 +1,3 @@
-const sorting = require('./sorting/main');
+import createWorkbook from './sorting/main.js'
 
-sorting.createWorkbook();
+createWorkbook()

@@ -1,8 +1,11 @@
-const xlsx = require('xlsx');
-require('dotenv').config();
+import xlsx from 'xlsx';
 
-const functions = require('./functions');
-const categoryTypes = require('../types/category');
+import clearObject from './functions.js';
+import Category from '../types/category.js';
+
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 
 const key = process.env.CATEGORY ? process.env.CATEGORY : '';
 const GROUP = process.env.GROUP ? process.env.GROUP : '';
@@ -13,11 +16,11 @@ function parseWorksheet() {
 
     // Parse all the data to JSON and remove columns that don't have a name
     let data = xlsx.utils.sheet_to_json(workSheet)
-        .map(item => functions.clearObject(item, GROUP));
+        .map(item => clearObject(item, GROUP));
 
     // Makes new array of all categories and removes duplicate through set 
     // and converts back to an array via spreas operator
-    categories = [...new Set(data.map(record => record[key]))];
+    let categories = [...new Set(data.map(record => record[key]))];
 
     return {data, categories};
 }
@@ -27,7 +30,7 @@ function parseWorksheet() {
 // Creates an array of categories and populates inner arrays with items of said category
 function populateCategories() {
     const {data, categories} = parseWorksheet();
-    let categorySet = categories.map(el => new categoryTypes.Category(el));
+    let categorySet = categories.map(el => new Category(el));
     data.forEach(record => {
         let category = categorySet.find(category => category.name === record[key]);
         delete record[key];
@@ -37,12 +40,10 @@ function populateCategories() {
     return categorySet;
 }
 
-
-// Creates new file for every unique category in the array
-
-
-function createWorkbook() {
+export default function createWorkbook() {
     const categorySet = populateCategories();
+
+    // Creates new file for every unique category in the array
     for(let category of categorySet) {
         let newWorkBook = xlsx.utils.book_new();
         let newWorkSheet = xlsx.utils.json_to_sheet(category.items);
@@ -52,5 +53,3 @@ function createWorkbook() {
 
     console.log('Done');
 }
-
-module.exports = { createWorkbook }
