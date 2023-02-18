@@ -13,9 +13,7 @@ function removeUnnecessarySpaces(string) {
     return string.replace(/ +(?= )/g,'').trim();
 }
 
-const clearObject = function (object, key) {
+export default function clearObject(object, key) {
 	const stepOne =  removeUnnamedColumns(object);
 	return { ...stepOne, [key]: removeUnnecessarySpaces(stepOne[key])}
 } 
-
-module.exports = { clearObject };
